@@ -1,0 +1,992 @@
+/* ==========================================================================
+   CSS VARIABLES & GLOBAL SETTINGS
+   ========================================================================== */
+:root {
+    --bg-color: #050508;
+    --panel-bg: rgba(13, 13, 23, 0.75);
+    --panel-border: rgba(0, 240, 255, 0.25);
+    --panel-border-focus: rgba(0, 240, 255, 0.85);
+    
+    /* Neon glow colors */
+    --neon-cyan: #00f0ff;
+    --neon-lime: #00ffaa;
+    --neon-red: #ff0055;
+    --neon-yellow: #fcee0a;
+    
+    /* Text colors */
+    --text-main: #e2e8f0;
+    --text-muted: #718096;
+    --text-dark: #0f172a;
+
+    /* Glow filters */
+    --cyan-glow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.2);
+    --lime-glow: 0 0 10px rgba(0, 255, 170, 0.5), 0 0 20px rgba(0, 255, 170, 0.2);
+    --red-glow: 0 0 10px rgba(ff, 0, 85, 0.5), 0 0 20px rgba(255, 0, 85, 0.2);
+    
+    /* Fonts */
+    --font-cyber: 'Orbitron', sans-serif;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-ui: 'Rajdhani', 'Inter', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    scrollbar-width: thin;
+    scrollbar-color: var(--neon-cyan) var(--bg-color);
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-family: var(--font-ui);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-color);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--panel-border);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-cyan);
+    box-shadow: var(--cyan-glow);
+}
+
+/* ==========================================================================
+   AMBIENT OVERLAYS (Scanlines & Cyber Grid)
+   ========================================================================== */
+.scanlines {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.15;
+}
+
+.grid-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.grid-background::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, transparent 40%, var(--bg-color) 85%);
+}
+
+/* ==========================================================================
+   1. GATE OVERLAY (LOCK SCREEN)
+   ========================================================================== */
+.gate-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(5, 5, 8, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+                visibility 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(10px);
+}
+
+.gate-overlay.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.gate-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    padding: 2.5rem;
+    border-radius: 4px;
+    width: 90%;
+    max-width: 480px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), var(--cyan-glow);
+    transition: all 0.3s ease;
+}
+
+/* Cyberpunk decorative corners for the card */
+.gate-card::before, .gate-card::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border: 2px solid var(--neon-cyan);
+}
+.gate-card::before {
+    top: -5px;
+    left: -5px;
+    border-right: none;
+    border-bottom: none;
+}
+.gate-card::after {
+    bottom: -5px;
+    right: -5px;
+    border-left: none;
+    border-top: none;
+}
+
+/* Glitch Heading Effect */
+.glitch-wrapper {
+    margin-bottom: 0.5rem;
+}
+
+.glitch {
+    font-family: var(--font-cyber);
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: var(--text-main);
+    position: relative;
+    text-shadow: 0.05em 0 0 rgba(255, 0, 85, 0.75),
+                 -0.025em -0.05em 0 rgba(0, 240, 255, 0.75),
+                 0.025em 0.05em 0 rgba(0, 255, 170, 0.75);
+    animation: glitch 1.5s infinite;
+}
+
+.gate-subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    letter-spacing: 1px;
+}
+
+.lock-icon-wrapper {
+    font-size: 4rem;
+    color: var(--neon-cyan);
+    margin-bottom: 2rem;
+    text-shadow: var(--cyan-glow);
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 1.2rem;
+}
+
+#passcode-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--panel-border);
+    color: var(--neon-cyan);
+    padding: 1rem 1.5rem;
+    font-size: 1.5rem;
+    letter-spacing: 0.5rem;
+    text-align: center;
+    border-radius: 4px;
+    outline: none;
+    font-family: var(--font-mono);
+    transition: all 0.3s ease;
+}
+
+#passcode-input:focus {
+    border-color: var(--neon-cyan);
+    box-shadow: var(--cyan-glow), inset 0 0 10px rgba(0, 240, 255, 0.15);
+}
+
+.error-message {
+    color: var(--neon-red);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-shadow: 0 0 5px rgba(255, 0, 85, 0.3);
+}
+
+.error-message.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Shake Animation Class for errors */
+.shake {
+    animation: shake-anim 0.4s ease-in-out;
+    border-color: var(--neon-red) !important;
+    box-shadow: var(--red-glow) !important;
+}
+
+/* Cyberpunk Decrypt Button */
+.cyber-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--neon-lime);
+    color: var(--neon-lime);
+    font-family: var(--font-cyber);
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 1.1rem;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    text-shadow: var(--lime-glow);
+    box-shadow: inset 0 0 5px rgba(0, 255, 170, 0.2);
+}
+
+.cyber-btn:hover {
+    background: var(--neon-lime);
+    color: var(--text-dark);
+    box-shadow: var(--lime-glow);
+    text-shadow: none;
+}
+
+.gate-footer {
+    margin-top: 2rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pulse-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--neon-cyan);
+    border-radius: 50%;
+    box-shadow: var(--cyan-glow);
+    animation: dot-pulse 1.5s infinite;
+}
+
+/* ==========================================================================
+   2. MAIN CONTENT LAYOUT
+   ========================================================================== */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.main-content.hidden {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.main-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.15);
+}
+
+.logo {
+    font-family: var(--font-cyber);
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--text-main);
+    letter-spacing: 1px;
+}
+
+.logo-accent {
+    color: var(--neon-cyan);
+    margin-left: 5px;
+}
+
+.version-tag {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--neon-lime);
+    border: 1px solid rgba(0, 255, 170, 0.3);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-right: 5px;
+}
+
+.system-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--neon-lime);
+    box-shadow: var(--lime-glow);
+}
+
+.status-indicator.active {
+    animation: dot-pulse 1.2s infinite;
+}
+
+/* Grid layout for Panels */
+.content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+/* Cyber Panels (Glassmorphic containers) */
+.cyber-panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cyber-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon-cyan), transparent);
+}
+
+.panel-header {
+    background: rgba(0, 0, 0, 0.4);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.1);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.panel-title {
+    font-family: var(--font-cyber);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--neon-cyan);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.panel-icon {
+    font-size: 0.95rem;
+}
+
+.panel-decorations {
+    display: flex;
+    gap: 5px;
+}
+
+.panel-decorations span {
+    width: 6px;
+    height: 6px;
+    background: rgba(0, 240, 255, 0.3);
+    clip-path: polygon(0 0, 100% 0, 70% 100%, 0 100%);
+}
+
+.panel-decorations span.red-decor {
+    background: var(--neon-red);
+    box-shadow: var(--red-glow);
+}
+
+.panel-decorations span:nth-child(2) {
+    background: var(--neon-cyan);
+}
+
+/* ==========================================================================
+   VIDEO COMPONENT
+   ========================================================================== */
+.video-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    background-color: #000;
+    overflow: hidden;
+}
+
+.video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: none;
+}
+
+.video-overlay-decor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.hud-item {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--neon-cyan);
+    background: rgba(5, 5, 8, 0.7);
+    padding: 4px 8px;
+    border: 1px solid rgba(0, 240, 255, 0.2);
+    border-radius: 2px;
+    letter-spacing: 1px;
+}
+
+.hud-top-left {
+    align-self: flex-start;
+    color: var(--neon-red);
+    text-shadow: var(--red-glow);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.hud-top-left::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--neon-red);
+    animation: dot-pulse 1s infinite alternate;
+}
+
+.hud-top-right {
+    align-self: flex-end;
+}
+
+.hud-bottom-left {
+    align-self: flex-start;
+    margin-top: auto;
+}
+
+.hud-bottom-right {
+    align-self: flex-end;
+    margin-top: auto;
+}
+
+/* ==========================================================================
+   COUNTDOWN TIMER COMPONENT
+   ========================================================================== */
+.glow-panel {
+    border-color: var(--neon-red);
+    box-shadow: 0 0 15px rgba(255, 0, 85, 0.15);
+}
+
+.glow-panel::before {
+    background: linear-gradient(90deg, var(--neon-red), transparent);
+}
+
+.glow-panel .panel-title {
+    color: var(--neon-red);
+    text-shadow: var(--red-glow);
+}
+
+.countdown-wrapper {
+    padding: 2.5rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(255, 0, 85, 0.02) 0%, transparent 100%);
+}
+
+.countdown-grid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    direction: ltr; /* Keeps the numbers running left-to-right (Days : Hours : Minutes : Seconds) */
+}
+
+.timer-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 0, 85, 0.2);
+    border-radius: 4px;
+    padding: 0.8rem 0.5rem;
+    position: relative;
+}
+
+.timer-box::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    width: 80%;
+    height: 2px;
+    background: var(--neon-red);
+    box-shadow: var(--red-glow);
+}
+
+.timer-number {
+    font-family: var(--font-cyber);
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: var(--neon-red);
+    text-shadow: var(--red-glow);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+}
+
+.timer-divider {
+    font-family: var(--font-cyber);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--neon-red);
+    text-shadow: var(--red-glow);
+    animation: blink-soft 1s infinite alternate;
+}
+
+.timer-label {
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   CHAT INTERFACE COMPONENT
+   ========================================================================== */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 450px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+/* Scrollbar styles inside chat messages */
+.chat-messages::-webkit-scrollbar {
+    width: 5px;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(0, 240, 255, 0.15);
+}
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--neon-cyan);
+}
+
+/* Chat bubble structures */
+.chat-bubble-wrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 75%;
+    width: fit-content;
+}
+
+.chat-bubble-wrapper.sent {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.chat-bubble-wrapper.received {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+
+.chat-sender-name {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+}
+
+.chat-bubble-wrapper.sent .chat-sender-name {
+    color: var(--neon-lime);
+}
+
+.chat-bubble-wrapper.received .chat-sender-name {
+    color: var(--neon-cyan);
+}
+
+.chat-bubble {
+    padding: 0.85rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    position: relative;
+    word-break: break-word;
+}
+
+.chat-bubble-wrapper.sent .chat-bubble {
+    background: rgba(0, 255, 170, 0.08);
+    border: 1px solid rgba(0, 255, 170, 0.25);
+    color: var(--text-main);
+    border-bottom-right-radius: 1px;
+    box-shadow: inset 0 0 10px rgba(0, 255, 170, 0.05);
+}
+
+.chat-bubble-wrapper.received .chat-bubble {
+    background: rgba(0, 240, 255, 0.08);
+    border: 1px solid rgba(0, 240, 255, 0.25);
+    color: var(--text-main);
+    border-bottom-left-radius: 1px;
+    box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.05);
+}
+
+.chat-timestamp {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.5rem 0.8rem;
+}
+
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    background-color: var(--neon-cyan);
+    border-radius: 50%;
+    animation: typing-bounce 1.2s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+/* Chat Input Bar */
+.chat-input-wrapper {
+    display: flex;
+    padding: 1rem;
+    background: rgba(5, 5, 8, 0.8);
+    border-top: 1px solid rgba(0, 240, 255, 0.1);
+    gap: 0.75rem;
+}
+
+#chat-input {
+    flex-grow: 1;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--panel-border);
+    color: var(--text-main);
+    padding: 0.9rem 1.2rem;
+    font-size: 0.95rem;
+    border-radius: 4px;
+    outline: none;
+    font-family: var(--font-ui);
+    transition: all 0.3s ease;
+}
+
+#chat-input:focus {
+    border-color: var(--neon-cyan);
+    box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
+}
+
+.chat-send-btn {
+    background: transparent;
+    border: 1px solid var(--neon-cyan);
+    color: var(--neon-cyan);
+    width: 48px;
+    height: 48px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 1.1rem;
+    box-shadow: inset 0 0 5px rgba(0, 240, 255, 0.1);
+}
+
+.chat-send-btn:hover {
+    background: var(--neon-cyan);
+    color: var(--text-dark);
+    box-shadow: var(--cyan-glow);
+}
+
+/* ==========================================================================
+   FOOTER SECTION
+   ========================================================================== */
+.main-footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-family: var(--font-ui);
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 240, 255, 0.05);
+}
+
+/* ==========================================================================
+   KEYFRAME ANIMATIONS
+   ========================================================================== */
+@keyframes glitch {
+    0% {
+        text-shadow: 0.05em 0 0 rgba(255, 0, 85, 0.75),
+                     -0.025em -0.05em 0 rgba(0, 240, 255, 0.75),
+                     0.025em 0.05em 0 rgba(0, 255, 170, 0.75);
+    }
+    14% {
+        text-shadow: 0.05em 0 0 rgba(255, 0, 85, 0.75),
+                     -0.025em -0.05em 0 rgba(0, 240, 255, 0.75),
+                     0.025em 0.05em 0 rgba(0, 255, 170, 0.75);
+    }
+    15% {
+        text-shadow: -0.05em -0.025em 0 rgba(255, 0, 85, 0.75),
+                     0.025em 0.025em 0 rgba(0, 240, 255, 0.75),
+                     -0.05em -0.05em 0 rgba(0, 255, 170, 0.75);
+    }
+    49% {
+        text-shadow: -0.05em -0.025em 0 rgba(255, 0, 85, 0.75),
+                     0.025em 0.025em 0 rgba(0, 240, 255, 0.75),
+                     -0.05em -0.05em 0 rgba(0, 255, 170, 0.75);
+    }
+    50% {
+        text-shadow: 0.025em 0.05em 0 rgba(255, 0, 85, 0.75),
+                     0.05em 0 0 rgba(0, 240, 255, 0.75),
+                     0 -0.05em 0 rgba(0, 255, 170, 0.75);
+    }
+    99% {
+        text-shadow: 0.025em 0.05em 0 rgba(255, 0, 85, 0.75),
+                     0.05em 0 0 rgba(0, 240, 255, 0.75),
+                     0 -0.05em 0 rgba(0, 255, 170, 0.75);
+    }
+    100% {
+        text-shadow: -0.025em 0 0 rgba(255, 0, 85, 0.75),
+                     -0.025em -0.025em 0 rgba(0, 240, 255, 0.75),
+                     -0.025em -0.05em 0 rgba(0, 255, 170, 0.75);
+    }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(0, 240, 255, 0.4)); }
+    50% { transform: scale(1.05); filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.8)); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(0, 240, 255, 0.4)); }
+}
+
+@keyframes dot-pulse {
+    0% { transform: scale(1); opacity: 0.4; }
+    50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px currentColor; }
+    100% { transform: scale(1); opacity: 0.4; }
+}
+
+@keyframes blink-soft {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+@keyframes shake-anim {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+}
+
+@keyframes typing-bounce {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* ==========================================================================
+   MEDIA QUERIES (RESPONSIVE DESIGN)
+   ========================================================================== */
+@media (min-width: 768px) {
+    .content-wrapper {
+        grid-template-columns: 3fr 2fr;
+    }
+    
+    .timer-section {
+        grid-column: 1 / -1;
+    }
+    
+    .video-section {
+        grid-column: span 1;
+    }
+    
+    .chat-section {
+        grid-column: span 1;
+        height: 100%;
+    }
+    
+    .chat-container {
+        height: calc(100% - 37px); /* Fills space matches with video height */
+    }
+
+    .timer-number {
+        font-size: 3.5rem;
+    }
+    
+    .timer-box {
+        min-width: 100px;
+        padding: 1rem;
+    }
+    
+    .timer-divider {
+        font-size: 2.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .main-content {
+        padding: 3rem 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .countdown-grid {
+        gap: 0.4rem;
+    }
+    
+    .timer-box {
+        min-width: 60px;
+        padding: 0.6rem 0.3rem;
+    }
+    
+    .timer-number {
+        font-size: 1.8rem;
+    }
+    
+    .timer-divider {
+        font-size: 1.2rem;
+    }
+    
+    .glitch {
+        font-size: 1.6rem;
+    }
+    
+    .gate-card {
+        padding: 1.5rem;
+    }
+    
+    #passcode-input {
+        font-size: 1.2rem;
+        padding: 0.8rem 1rem;
+        letter-spacing: 0.3rem;
+    }
+}
+
+/* ==========================================================================
+   FIREBASE CHAT SYSTEM NOTIFICATIONS
+   ========================================================================== */
+.system-destruct-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    border: 1px dashed var(--neon-red);
+    background: rgba(255, 0, 85, 0.05);
+    border-radius: 4px;
+    margin: auto;
+    max-width: 90%;
+    animation: glow-pulse-red 2s infinite alternate;
+}
+
+.system-destruct-message i {
+    font-size: 3rem;
+    color: var(--neon-red);
+    text-shadow: var(--red-glow);
+    margin-bottom: 15px;
+    animation: pulse 1s infinite alternate;
+}
+
+.system-welcome-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    border: 1px dashed var(--neon-cyan);
+    background: rgba(0, 240, 255, 0.03);
+    border-radius: 4px;
+    margin: auto;
+    max-width: 90%;
+}
+
+.system-welcome-message i {
+    font-size: 2.5rem;
+    color: var(--neon-cyan);
+    text-shadow: var(--cyan-glow);
+    margin-bottom: 12px;
+}
+
+@keyframes glow-pulse-red {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 0, 85, 0.1);
+        border-color: rgba(255, 0, 85, 0.25);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(255, 0, 85, 0.3);
+        border-color: rgba(255, 0, 85, 0.85);
+    }
+}
+

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة الوصول المستقبلية | Cyberpunk Gate</title>
+    <!-- Google Fonts for futuristic cyberpunk style -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons (e.g. locks, sends, play buttons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Ambient visual overlays -->
+    <div class="scanlines"></div>
+    <div class="grid-background"></div>
+
+    <!-- 1. شاشة قفل الأمان (Gate/Password Screen Overlay) -->
+    <div id="gate-overlay" class="gate-overlay">
+        <div class="gate-card">
+            <div class="glitch-wrapper">
+                <h2 class="glitch" data-text="SYSTEM SECURED">SYSTEM SECURED</h2>
+            </div>
+            <p class="gate-subtitle">الرجاء إدخال رمز المرور لتجاوز جدار الحماية</p>
+            
+            <div class="lock-icon-wrapper">
+                <i class="fa-solid fa-shield-halved lock-icon"></i>
+            </div>
+            
+            <div class="input-group">
+                <input type="password" id="passcode-input" placeholder="••••••••" autocomplete="off" autofocus>
+                <div class="glow-border"></div>
+            </div>
+
+            <!-- رسالة الخطأ (Error Message Box) -->
+            <div id="error-message" class="error-message">
+                <i class="fa-solid fa-triangle-exclamation"></i> ACCESS DENIED - INVALID CODE
+            </div>
+            
+            <button id="submit-btn" class="cyber-btn">
+                <span class="btn-text">فك التشفير // DECRYPT</span>
+                <span class="btn-glitch-bg"></span>
+            </button>
+
+            <div class="gate-footer">
+                <span class="pulse-dot"></span> IP LOGGED: SECURE ACCESS PROTOCOL
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. شاشة المحتوى الرئيسي (Main Content Interface) -->
+    <div id="main-content" class="main-content hidden">
+        <header class="main-header">
+            <div class="logo">
+                <span class="logo-accent">//</span> CYBERNET.OS <span class="version-tag">v2.8.5</span>
+            </div>
+            <div class="system-status">
+                <span class="status-indicator active"></span>
+                <span class="status-text">اتصال آمن // SECURED</span>
+            </div>
+        </header>
+
+        <main class="content-wrapper">
+            <!-- قسم الفيديو (Video Player Section) -->
+            <section class="panel-section video-section">
+                <div class="cyber-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-solid fa-video panel-icon"></i> البث الرئيسي // MAIN STREAM</span>
+                        <div class="panel-decorations">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="video-container">
+                        <!-- 
+                            ملاحظة / NOTE:
+                            تستطيع وضع مسار الفيديو الخاص بك في خاصية src بالأسفل.
+                            You can place your video file path or URL in the src attribute below.
+                            مثال / Example: src="videos/my_video.mp4" 
+                        -->
+                        <video id="cyber-video" controls autoplay muted loop playsinline>
+                            <source src="https://assets.mixkit.co/videos/preview/mixkit-futuristic-subway-station-with-neon-lights-43959-large.mp4" type="video/mp4">
+                            متصفحك لا يدعم تشغيل الفيديو. / Your browser does not support the video tag.
+                        </video>
+                        <div class="video-overlay-decor">
+                            <div class="hud-item hud-top-left">REC [REC]</div>
+                            <div class="hud-item hud-top-right">CAM_01_SEC</div>
+                            <div class="hud-item hud-bottom-left">ISO 800 | 24FPS</div>
+                            <div class="hud-item hud-bottom-right">1080P // AUTO</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- قسم العداد التنازلي (Countdown Timer Section) -->
+            <section class="panel-section timer-section">
+                <div class="cyber-panel glow-panel">
+                    <div class="panel-header">
+                        <span class="panel-title"><i class="fa-regular fa-clock panel-icon"></i> تدمير ذاتي للنظام // SYSTEM SELF-DESTRUCT</span>
+                        <div class="panel-decorations">
+                            <span class="red-decor"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="countdown-wrapper">
+                        <div class="countdown-grid">
+                            <!-- الأيام / Days -->
+                            <div class="timer-box">
+                                <span id="days" class="timer-number">00</span>
+                                <span class="timer-label">أيام / DAYS</span>
+                            </div>
+                            <div class="timer-divider">:</div>
+                            <!-- الساعات / Hours -->
+                            <div class="timer-box">
+                                <span id="hours" class="timer-number">00</span>
+                                <span class="timer-label">ساعات / HOURS</span>
+                            </div>
+                            <div class="timer-divider">:</div>
+                            <!-- الدقائق / Minutes -->
+                            <div class="timer-box">
+                                <span id="minutes" class="timer-number">00</span>
+                                <span class="timer-label">دقائق / MINS</span>
+                            </div>
+                            <div class="timer-divider">:</div>
+                            <!-- الثواني / Seconds -->
+                            <div class="timer-box">
+                                <span id="seconds" class="timer-number">00</span>
+                                <span class="timer-label">ثواني / SECS</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. نظام المحادثة السفلي (Chat Interface Section) -->
+            <section class="panel-section chat-section">
+                <div class="cyber-panel">
+                    <div class="panel-header">
+                        <span class="panel-title" id="self-destruct-btn" style="cursor: pointer;"><i class="fa-solid fa-comments panel-icon"></i> قناة اتصال مشفرة // ENCRYPTED COMMS</span>
+                        <div class="panel-decorations">
+                            <span class="pulse-indicator"></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-container">
+                        <!-- مساحة الرسائل (Message Log) -->
+                        <div id="chat-messages" class="chat-messages">
+                            <!-- الرسائل سيتم توليدها تلقائياً بواسطة JavaScript -->
+                        </div>
+                        
+                        <!-- إدخال المحادثة (Chat Input Bar) -->
+                        <form id="chat-form" class="chat-input-wrapper">
+                            <input type="text" id="chat-input" placeholder="اكتب رسالتك المشفرة هنا..." autocomplete="off">
+                            <button type="submit" id="chat-send-btn" class="chat-send-btn">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer class="main-footer">
+            <p>&copy; 2026 CYBERNET.OS. جميع الحقوق محفوظة لشبكة المقاومة الرقمية.</p>
+        </footer>
+    </div>
+
+    <!-- Script file -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
