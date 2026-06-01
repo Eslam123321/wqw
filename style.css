@@ -520,6 +520,205 @@ body {
 }
 
 /* ==========================================================================
+   IMAGE GALLERY COMPONENT (SECURITY CAM SNAPS)
+   ========================================================================== */
+.gallery-container {
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(0, 240, 255, 0.15);
+}
+
+.gallery-title-wrapper {
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.gallery-title-accent {
+    color: var(--neon-cyan);
+    font-family: var(--font-cyber);
+    font-weight: 900;
+}
+
+.gallery-title {
+    font-family: var(--font-cyber);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--text-main);
+    text-shadow: 0 0 5px rgba(226, 232, 240, 0.2);
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 767px) {
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.gallery-card {
+    background: rgba(5, 5, 8, 0.6);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.gallery-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 5;
+}
+
+.gallery-card:hover {
+    border-color: var(--neon-cyan);
+    box-shadow: var(--cyan-glow);
+    transform: translateY(-3px);
+}
+
+.gallery-card:hover::before {
+    border-color: rgba(0, 240, 255, 0.5);
+}
+
+.gallery-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 60%; /* Aspect ratio for the snaps */
+    overflow: hidden;
+    background-color: #000;
+}
+
+.gallery-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(85%) contrast(1.1) brightness(0.9);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-card:hover .gallery-img {
+    filter: grayscale(0%) contrast(1) brightness(1);
+    transform: scale(1.08);
+}
+
+.gallery-image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 3;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.7) 100%);
+    transition: all 0.3s ease;
+}
+
+.gallery-hud-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hud-status {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--neon-cyan);
+    background: rgba(0, 0, 0, 0.6);
+    padding: 2px 6px;
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-pulse-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--neon-cyan);
+    animation: dot-pulse 1s infinite alternate;
+}
+
+.gallery-card:hover .status-pulse-dot {
+    background-color: var(--neon-lime);
+    box-shadow: var(--lime-glow);
+}
+
+.gallery-card:hover .hud-status {
+    color: var(--neon-lime);
+    border-color: rgba(0, 255, 170, 0.4);
+}
+
+.hud-resol {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.gallery-hud-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hud-loc {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.gallery-card:hover .hud-loc {
+    color: var(--text-main);
+}
+
+.gallery-glitch-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 240, 255, 0.15) 50%);
+    background-size: 100% 6px;
+    z-index: 2;
+    opacity: 0.3;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-card:hover .gallery-glitch-layer {
+    opacity: 0.5;
+    animation: scanline-flicker 0.15s infinite;
+}
+
+@keyframes scanline-flicker {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(2px); }
+}
+
+/* ==========================================================================
    COUNTDOWN TIMER COMPONENT
    ========================================================================== */
 .glow-panel {
