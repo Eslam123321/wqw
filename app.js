@@ -125,14 +125,76 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. كود العداد التنازلي المستمر (Persistent Countdown Timer)
     // ----------------------------------------------------------------------
     let countdownTarget = localStorage.getItem('cyber_countdown_target');
+    let countdownDuration = localStorage.getItem('cyber_countdown_duration');
+
+    // افتراضياً 72 ساعة إذا لم يكن محدداً مسبقاً
+    if (!countdownDuration) {
+        countdownDuration = "72";
+        localStorage.setItem('cyber_countdown_duration', countdownDuration);
+        
+        // إعادة تعيين وقت الهدف ليكون متوافقاً مع 72 ساعة كافتراضي جديد
+        const seventyTwoHoursInMs = 72 * 60 * 60 * 1000;
+        countdownTarget = Date.now() + seventyTwoHoursInMs;
+        localStorage.setItem('cyber_countdown_target', countdownTarget);
+    }
+
+    const durationHours = parseInt(countdownDuration, 10);
+    const durationMs = durationHours * 60 * 60 * 1000;
 
     if (!countdownTarget) {
-        // إنشاء عداد 48 ساعة من الآن وتخزينه
-        const fortyEightHoursInMs = 48 * 60 * 60 * 1000;
-        countdownTarget = Date.now() + fortyEightHoursInMs;
+        countdownTarget = Date.now() + durationMs;
         localStorage.setItem('cyber_countdown_target', countdownTarget);
     } else {
         countdownTarget = parseInt(countdownTarget, 10);
+    }
+
+    // تحديث وتنشيط الأزرار المناسبة حسب المدة المخزنة
+    const durationButtons = document.querySelectorAll('.timer-btn[data-hours]');
+    durationButtons.forEach(btn => {
+        if (btn.getAttribute('data-hours') === countdownDuration) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    function setTimerDuration(hours) {
+        localStorage.setItem('cyber_countdown_duration', hours);
+        countdownDuration = String(hours);
+        resetTimer();
+    }
+
+    function resetTimer() {
+        const hours = parseInt(countdownDuration, 10);
+        const ms = hours * 60 * 60 * 1000;
+        countdownTarget = Date.now() + ms;
+        localStorage.setItem('cyber_countdown_target', countdownTarget);
+        
+        // إعادة تهيئة مظهر الوهج للوحة العداد
+        const timerPanel = document.querySelector('.glow-panel');
+        if (timerPanel) {
+            timerPanel.style.boxShadow = "0 0 15px rgba(255, 0, 85, 0.15)";
+        }
+        
+        updateCountdown();
+    }
+
+    // تفعيل أحداث الضغط على أزرار اختيار المدة الزمنية
+    durationButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            durationButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const hours = btn.getAttribute('data-hours');
+            setTimerDuration(hours);
+        });
+    });
+
+    // تفعيل زر إعادة التعيين
+    const resetBtn = document.querySelector('.reset-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            resetTimer();
+        });
     }
 
     function updateCountdown() {
