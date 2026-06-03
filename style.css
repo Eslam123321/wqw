@@ -854,6 +854,7 @@ body {
     color: var(--neon-cyan);
     text-shadow: var(--cyan-glow);
     background: rgba(0, 240, 255, 0.05);
+    padding: 6px 12px;
 }
 
 .timer-btn.reset-btn:hover {
@@ -862,6 +863,14 @@ body {
     box-shadow: var(--cyan-glow);
     text-shadow: none;
     border-color: var(--neon-cyan);
+}
+
+.timer-btn.reset-btn i {
+    transition: transform 0.2s ease;
+}
+
+.timer-btn.reset-btn:hover i {
+    transform: scale(1.2);
 }
 
 /* ==========================================================================
