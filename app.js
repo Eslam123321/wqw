@@ -169,15 +169,29 @@ document.addEventListener('DOMContentLoaded', () => {
     // ----------------------------------------------------------------------
     // 4. كود الـ Firebase والشات اللحظي (Firebase Realtime Chat)
     // ----------------------------------------------------------------------
-    // إنشاء مُعرّف جلسة فريد لكل متصفح للتمييز بين الأطراف في الشات
-    let userId = sessionStorage.getItem('cyber_chat_user_id');
+    // إنشاء مُعرّف جلسة فريد لكل متصفح للتمييز بين الأطراف في الشات (باستخدام localStorage لضمان الثبات)
+    let userId = localStorage.getItem('cyber_chat_user_id');
     if (!userId) {
         userId = 'AGENT-' + Math.floor(100 + Math.random() * 900);
-        sessionStorage.setItem('cyber_chat_user_id', userId);
+        localStorage.setItem('cyber_chat_user_id', userId);
     }
 
     const messagesRef = ref(db, 'messages');
     const displayedMessageIds = new Set();
+
+    // تحميل الرسائل المخزنة محلياً لثبات وسرعة عرض الشات
+    try {
+        const stored = localStorage.getItem('cyber_chat_messages');
+        if (stored) {
+            const cachedMessages = JSON.parse(stored);
+            cachedMessages.forEach(msg => {
+                displayedMessageIds.add(msg.id);
+                appendMessage(msg.sender, msg.text, msg.type, msg.timestamp);
+            });
+        }
+    } catch (e) {
+        console.error("Failed to load cached messages", e);
+    }
 
     // توليد الوقت بصيغة (HH:MM:SS)
     function getCurrentTimeString() {
@@ -257,6 +271,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         appendMessage(displayName, messageData.text, messageType, messageData.timestamp);
 
+        // حفظ الرسالة في الذاكرة المحلية لضمان ثباتها
+        try {
+            const stored = localStorage.getItem('cyber_chat_messages');
+            const msgs = stored ? JSON.parse(stored) : [];
+            // تجنب تكرار حفظ الرسالة في الكاش
+            if (!msgs.some(m => m.id === messageId)) {
+                msgs.push({
+                    id: messageId,
+                    sender: displayName,
+                    text: messageData.text,
+                    type: messageType,
+                    timestamp: messageData.timestamp
+                });
+                localStorage.setItem('cyber_chat_messages', JSON.stringify(msgs));
+            }
+        } catch (e) {
+            console.error("Failed to cache message", e);
+        }
+
         // تشغيل الرنين للرسائل الواردة فقط من الطرف الآخر
         if (!isCurrentUser) {
             playIncomingMessageChime();
@@ -292,55 +325,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. تفعيل الزر السري للتدمير الذاتي (Self-destruct click event)
     if (selfDestructBtn) {
         selfDestructBtn.addEventListener('click', () => {
-            const confirmDestruct = confirm("⚠️ تحذير أمني خطير:\nهل أنت متأكد من تدمير هذه المحادثة نهائياً ومسح كافة الرسائل والسجلات من الخادم السحابي؟ لا يمكن التراجع عن هذا الإجراء.");
-            if (confirmDestruct) {
-                remove(messagesRef)
-                    .then(() => {
-                        console.log("Comms database cleared.");
-                    })
-                    .catch((error) => {
-                        console.error("Failed to delete database node: ", error);
-                    });
-            }
+            // حذف مباشر بدون نوافذ تأكيد أو تعقيدات
+            remove(messagesRef)
+                .then(() => {
+                    console.log("Comms database cleared.");
+                })
+                .catch((error) => {
+                    console.error("Failed to delete database node: ", error);
+                });
         });
     }
 
     // 4. مراقبة عملية الحذف (onValue) لتطهير الشاشات فوراً عند الطرفين
-    let initialLoad = true;
-    let hadMessages = false;
-
     onValue(messagesRef, (snapshot) => {
         if (!chatMessagesContainer) return;
 
         if (!snapshot.exists()) {
             chatMessagesContainer.innerHTML = '';
             displayedMessageIds.clear();
+            localStorage.removeItem('cyber_chat_messages'); // حذف الرسائل المخزنة محلياً فوراً
 
-            if (!initialLoad || hadMessages) {
-                // تصفية السجلات فوراً وعرض شاشة التنبيه
-                const destructDiv = document.createElement('div');
-                destructDiv.className = 'system-destruct-message';
-                destructDiv.innerHTML = `
-                    <i class="fa-solid fa-radiation"></i>
-                    <span>⚠️ تم تدمير هذه المحادثة وتطهير السجلات بنجاح.</span>
-                `;
-                chatMessagesContainer.appendChild(destructDiv);
-                playSystemBeep();
-            } else {
-                // شاشة ترحيب خلو سجل المحادثة
-                const welcomeDiv = document.createElement('div');
-                welcomeDiv.className = 'system-welcome-message';
-                welcomeDiv.innerHTML = `
-                    <i class="fa-solid fa-shield-halved"></i>
-                    <span style="margin-top: 10px; font-family: var(--font-mono); font-size: 0.9rem; color: var(--neon-cyan); text-shadow: var(--cyan-glow); display: block;">
-                        تم تأسيس قناة اتصال آمنة ومقاومة للرصد. لا توجد رسائل سابقة.
-                    </span>
-                `;
-                chatMessagesContainer.appendChild(welcomeDiv);
-            }
-        } else {
-            hadMessages = true;
+            // شاشة ترحيب خلو سجل المحادثة مباشرة دون رسائل تحذيرية معقدة
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.className = 'system-welcome-message';
+            welcomeDiv.innerHTML = `
+                <i class="fa-solid fa-shield-halved"></i>
+                <span style="margin-top: 10px; font-family: var(--font-mono); font-size: 0.9rem; color: var(--neon-cyan); text-shadow: var(--cyan-glow); display: block;">
+                    تم تأسيس قناة اتصال آمنة ومقاومة للرصد. لا توجد رسائل سابقة.
+                </span>
+            `;
+            chatMessagesContainer.appendChild(welcomeDiv);
         }
-        initialLoad = false;
     });
 });
